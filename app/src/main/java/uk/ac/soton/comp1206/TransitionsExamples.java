@@ -8,17 +8,17 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -31,28 +31,38 @@ public class TransitionsExamples extends Application {
 
 //        rotator(primaryStage);
 //        fader(primaryStage);
-//        timer(primaryStage);
 //      translaterKeyFrames(primaryStage);
         animationTimerExample(primaryStage);
+//        canvas(primaryStage);
+//        timer(primaryStage);
 
     }
     public void rotator(Stage primaryStage) {
         // Load the image (ensure the path is correct based on your project structure)
-        Image image = new Image("/afc.png");
+        Image image = new Image("/img.png");
 
         // Create an ImageView to display the image
         ImageView imageView = new ImageView(image);
 
         // Set up a RotateTransition for the ImageView
         RotateTransition rotateTransition = new RotateTransition(Duration.seconds(3), imageView);
+        RotateTransition rotateTransition2 = new RotateTransition(Duration.seconds(3));
+        Rectangle rec = new Rectangle(300,100);
+        rotateTransition2.setNode(rec);
         rotateTransition.setByAngle(360); // Rotate by 360 degrees
         rotateTransition.setCycleCount(RotateTransition.INDEFINITE); // Rotate indefinitely
         rotateTransition.setAutoReverse(true); // Enable auto-reverse to rotate back
+        rotateTransition2.setByAngle(180); // Rotate by 360 degrees
+        rotateTransition2.setCycleCount(RotateTransition.INDEFINITE); // Rotate indefinitely
+        rotateTransition2.setAutoReverse(true); // Enable auto-reverse to rotate back
         rotateTransition.play(); // Start the rotation
+        rotateTransition2.play();
 
         // Set up the scene and stage
-        StackPane root = new StackPane(imageView);
-        Scene scene = new Scene(root, 600, 450);
+        VBox root = new VBox();
+        root.setSpacing(100);
+        root.getChildren().addAll(imageView,rec);
+        Scene scene = new Scene(root, 400, 800);
 
         primaryStage.setTitle("Rotate Image Example");
         primaryStage.setScene(scene);
@@ -62,7 +72,7 @@ public class TransitionsExamples extends Application {
     public void timer(Stage primaryStage) {
 
         // Create a rectangle with initial width of 200
-        Rectangle rectangle = new Rectangle(200, 50, Color.BLUE);
+        Rectangle rectangle = new Rectangle(600, 50, Color.BLUE);
 
         // Create a label to display lives
         Label livesLabel = new Label();
@@ -115,15 +125,16 @@ public class TransitionsExamples extends Application {
         FadeTransition fadeTransition = new FadeTransition(Duration.seconds(3));
         fadeTransition.setFromValue(1.0); // Fully visible
         fadeTransition.setToValue(0.0); // Fully transparent
-        fadeTransition.setAutoReverse(true);
-        //fadeTransition.play();
+        fadeTransition.setDelay(Duration.seconds(1));
+//        fadeTransition.setAutoReverse(true);
+        //    fadeTransition.play();
         Scene scene = new Scene(b, 1200, 600);
         ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(1));
         scaleTransition.setToX(2.0); // Scale to double width
         scaleTransition.setToY(2.0); // Scale to double height
-        scaleTransition.setDelay(Duration.seconds(2));
-        scaleTransition.setAutoReverse(true); // Automatically reverse the animation
-//        scaleTransition.setCycleCount(ScaleTransition.INDEFINITE); // Run the animation indefinitely
+        scaleTransition.setDelay(Duration.seconds(1));
+//        scaleTransition.setAutoReverse(true); // Automatically reverse the animation
+ //       scaleTransition.setCycleCount(ScaleTransition.INDEFINITE); // Run the animation indefinitely
 //        SequentialTransition seq = new SequentialTransition(rectangle, scaleTransition,fadeTransition);
 //        seq.play();
         ParallelTransition pt = new ParallelTransition(rectangle, scaleTransition,fadeTransition);
@@ -137,10 +148,12 @@ public class TransitionsExamples extends Application {
     }
 
     public void translaterKeyFrames(Stage primaryStage){
-        Rectangle rectangle = new Rectangle(100, 40, 100, 100);
+        Rectangle rectangle = new Rectangle(200, 80, 200, 200);
 
         // Moving the rectangle 10 pixels to the right
         rectangle.translateXProperty().set(10);
+
+
         KeyFrame kf = new KeyFrame(Duration.seconds(1),new KeyValue(rectangle.translateXProperty(),25));
         KeyFrame kf2 = new KeyFrame(Duration.seconds(2),new KeyValue(rectangle.translateYProperty(),50));
         KeyFrame kf3 = new KeyFrame(Duration.seconds(3),new KeyValue(rectangle.translateYProperty(),300));
@@ -149,7 +162,7 @@ public class TransitionsExamples extends Application {
         t.getKeyFrames().addAll(kf,kf2,kf3,kf4);
         t.play();
         Pane root = new Pane(rectangle);
-        Scene scene = new Scene(root, 300, 200);
+        Scene scene = new Scene(root, 800, 400);
 
         primaryStage.setTitle("Translation Example");
         primaryStage.setScene(scene);
@@ -183,7 +196,7 @@ public class TransitionsExamples extends Application {
                         newX = 0; // Reset to the left side
                     }
                     if (newY > scene.getHeight()) {
-                        newY = 0; // Reset to the left side
+                        newY = 0; //
                     }
                     circle.setTranslateX(newX);
                     circle.setTranslateY(newY);
@@ -200,6 +213,38 @@ public class TransitionsExamples extends Application {
         primaryStage.show();
 
     }
+
+
+    public void canvas(Stage primaryStage){
+        // Create a new canvas and set its size
+        Canvas canvas = new Canvas(400, 300);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        drawFace(gc);
+
+        // Create a root group and add the canvas to it
+        Group root = new Group(canvas);
+        Scene scene = new Scene(root, 400, 300);
+
+        primaryStage.setTitle("Canvas Example");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private void drawFace(GraphicsContext gc) {
+        // Draw the head
+        gc.setFill(Color.YELLOW);
+        gc.fillOval(100, 50, 200, 200);
+
+        // Draw the eyes
+        gc.setFill(Color.BLACK);
+        gc.fillOval(150, 100, 20, 20);
+        gc.fillOval(230, 100, 20, 20);
+
+        // Draw the mouth
+        gc.strokeLine(150, 180, 250, 180);
+    }
+
 
 }
 
